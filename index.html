@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ChocoSnap</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Young+Serif&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+  <header class="head">
+    <canvas id="mascot" class="mascot" width="208" height="208" aria-hidden="true"></canvas>
+    <div class="head-text">
+      <h1>ChocoSnap</h1>
+      <p>Foto strip cokelat yang hangat. Potret, pilih frame, unduh, atau pindai kodenya.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+    <canvas id="deco" class="deco" width="520" height="220" aria-hidden="true"></canvas>
+  </header>
+
+  <div class="grid">
+    <section class="photos card" aria-labelledby="h-foto">
+      <p class="eyebrow">Langkah 1</p>
+      <h2 id="h-foto">Foto</h2>
+      <p class="sub">Nyalakan kamera untuk sesi otomatis, atau ketuk slot untuk memilih foto.</p>
+
+      <div class="row" id="camRow">
+        <button type="button" class="btn primary" id="camOn">Nyalakan kamera</button>
+      </div>
+      <div id="camBox" hidden>
+        <div class="vf">
+          <video id="vid" playsinline muted></video>
+          <div class="count" id="count" aria-live="assertive"></div>
+          <div class="vf-flash" id="vfFlash"></div>
+        </div>
+        <div class="camtools">
+          <button type="button" class="btn primary" id="shoot">Mulai sesi foto</button>
+          <div class="seg" id="g-timer" role="group" aria-label="Hitung mundur"></div>
+          <button type="button" class="btn" id="flip">Balik kamera</button>
+          <button type="button" class="btn" id="camOff">Matikan</button>
+        </div>
+      </div>
+
+      <div class="slots" id="slots"></div>
+      <div class="row">
+        <button type="button" class="btn" id="many">Pilih beberapa foto</button>
+        <button type="button" class="btn" id="reset">Kembalikan contoh</button>
+      </div>
+      <label class="check"><input type="checkbox" id="cam" checked> Ketuk slot membuka kamera HP</label>
+      <p class="help">Kamera langsung memakai izin kamera browser. Kalau diblokir di tampilan ini, ketuk slot untuk memotret lewat aplikasi kamera HP. Foto juga bisa diseret ke halaman.</p>
+      <input type="file" id="fileOne" accept="image/*" capture="user" hidden>
+      <input type="file" id="fileMany" accept="image/*" multiple hidden>
+    </section>
+
+    <section class="frame card" aria-labelledby="h-frame">
+      <p class="eyebrow">Langkah 2</p>
+      <h2 id="h-frame" style="margin-bottom:14px">Susunan dan frame</h2>
+      <fieldset class="grp"><legend>Susunan</legend><div class="seg" id="g-layout"></div></fieldset>
+      <fieldset class="grp"><legend>Frame</legend><div class="frames" id="g-frame"></div></fieldset>
+    </section>
+
+    <section class="extra card" aria-labelledby="h-extra">
+      <p class="eyebrow">Langkah 3</p>
+      <h2 id="h-extra" style="margin-bottom:14px">Sentuhan akhir</h2>
+      <fieldset class="grp"><legend>Filter</legend><div class="seg" id="g-filter"></div></fieldset>
+      <fieldset class="grp">
+        <legend>Stiker</legend>
+        <label class="check"><input type="checkbox" id="stars" checked> Bintang bertekstur</label>
+        <div class="seg" id="g-patch" role="group" aria-label="Tempelan felt" style="margin-top:6px"></div>
+      </fieldset>
+      <fieldset class="grp">
+        <legend>Tulisan</legend>
+        <input class="field" id="caption" type="text" maxlength="28" value="ChocoSnap" aria-label="Judul di bawah strip" placeholder="Judul di bawah strip">
+        <label class="check"><input type="checkbox" id="date" checked> Tampilkan tanggal</label>
+        <label class="check"><input type="checkbox" id="mirror"> Balik foto seperti cermin</label>
+      </fieldset>
+      <fieldset class="grp">
+        <legend>Kode QR di strip</legend>
+        <label class="check"><input type="checkbox" id="qrOn"> Cetak kode QR di bawah strip</label>
+        <input class="field" id="qrUrl" type="text" inputmode="url" autocomplete="off" placeholder="Tautan album, Instagram, atau situsmu" aria-label="Tautan untuk kode QR">
+        <p class="help" id="qrHint" style="margin-top:0">Yang memindai akan diarahkan ke tautan ini.</p>
+      </fieldset>
+    </section>
+
+    <section class="stage" aria-label="Pratinjau">
+      <div class="stage-in">
+        <div class="paper-wrap">
+          <canvas id="cv" role="img" aria-label="Pratinjau strip foto"></canvas>
+          <div class="flash" id="flash"></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn primary" id="dl" disabled>Unduh PNG</button>
+          <button type="button" class="btn" id="qrBtn" hidden disabled>QR untuk unduh di HP</button>
+          <p class="need" id="need"></p>
+        </div>
+        <p class="status" id="status" aria-live="polite">Gambar contoh ditampilkan. Ganti dengan fotomu.</p>
+        <div class="qrpanel" id="qrPanel" hidden>
+          <canvas id="qrCv2" width="296" height="296" aria-label="Kode QR hasil foto"></canvas>
+          <div class="linkrow">
+            <input class="field" id="qrLink" type="text" readonly aria-label="Tautan foto">
+            <button type="button" class="btn" id="qrCopy">Salin</button>
+          </div>
+          <p>Pindai dengan kamera HP untuk membuka foto ini. Tautan menunjuk ke foto saat QR dibuat, dan hanya terbuka untuk akun yang punya akses ke halaman ini. Bagikan halaman lewat menu Share agar teman bisa memindai.</p>
+        </div>
+        <div class="fallback" id="fallback" hidden>
+          <img id="fbimg" alt="Hasil strip foto">
+          <p>Tekan lama gambar ini untuk menyimpannya.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
